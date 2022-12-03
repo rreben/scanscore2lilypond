@@ -11,11 +11,12 @@ An excellent tutorial is found at "https://zetcode.com/python/click".
 
 import click
 from . import __version__
+from .purge import file_content, remove_layout_instructions
 
 
 @click.command(help='purges input file')
 @click.argument('filename')
 def purge(filename):
-    """Print FILENAME."""
-    click.echo(filename)
-
+    content = file_content(filename)
+    for line in remove_layout_instructions( content):
+        print(line)
