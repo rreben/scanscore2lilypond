@@ -34,7 +34,7 @@ def purge(filename, output_file):
     content_without_layout_instructions = remove_layout_instructions(content)
     purged_content = condense_lines(content_without_layout_instructions)
     if output_file:
-        write_file_content(output_file, content_without_layout_instructions)
+        write_file_content(output_file, purged_content)
     else:
         for line in purged_content:
             print(line)
