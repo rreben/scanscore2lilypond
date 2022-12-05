@@ -40,33 +40,23 @@ def condense_lines(content: list[str]) -> list[str]:
         list: The content of the file with condensed lines.
     """
     new_content = []
-    isCollecting = False
     condensed_line = ''
     for line in content:
-        if isCollecting:
-            if re.search(r'^\s*\|', line):
-                condensed_line = condensed_line + line
+        if re.search(r'^\s*[rsabcdefg](es)*(is)*[\,\']*[12345678]\.*', line):
+            # line starts with a note or a rest or a silent note
+            condensed_line += line
+        elif re.search(r'^\s*\|', line):
+            # line starts with a bar so we can add the condensed line
+            condensed_line += line
+            condensed_line = re.sub(r'\s+', ' ', condensed_line)
+            new_content.append(condensed_line)
+            condensed_line = ''
+        else:
+            # in all other cases we just add the line and any input of condensed line
+            # we might have so far
+            if condensed_line:
                 condensed_line = re.sub(r'\s+', ' ', condensed_line)
                 new_content.append(condensed_line)
                 condensed_line = ''
-            else:
-                condensed_line = condensed_line + line
-        else:
             new_content.append(line)
-        if (re.search(r'^$', line)):
-            isCollecting = False
-            new_content.append(line)
-            condensed_line = ''
-        if (re.search(r'^\s*\\', line)
-            or
-            re.search(r'^\s*}', line)):
-            isCollecting = False
-            new_content.append(line)
-            condensed_line = ''
-        if re.search(r'^\s*\|', line) and not isCollecting:
-            isCollecting = True
-            condensed_line = ''
-            new_content.append(line)
-        
-        
     return new_content
