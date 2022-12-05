@@ -19,9 +19,22 @@ def file_content(filename) -> list[str]:
         content = afile.readlines()
     return content
 
+
+def write_file_content(filename, content):
+    with open(filename, 'w') as afile:
+        for line in content:
+            afile.write(line + '\n')
+
+
 @click.command(help='purges input file')
 @click.argument('filename')
-def purge(filename):
+@click.option('--output', '-o', 'output_file', default=None, help='output file')
+def purge(filename, output_file):
     content = file_content(filename)
-    for line in condense_lines(remove_layout_instructions( content)):
-        print(line)
+    content_without_layout_instructions = remove_layout_instructions(content)
+    purged_content = condense_lines(content_without_layout_instructions)
+    if output_file:
+        write_file_content(output_file, content_without_layout_instructions)
+    else:
+        for line in purged_content:
+            print(line)
