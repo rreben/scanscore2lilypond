@@ -11,7 +11,7 @@ An excellent tutorial is found at "https://zetcode.com/python/click".
 
 import click
 from . import __version__
-from .purge import remove_layout_instructions, condense_lines
+from .purge import remove_layout_instructions, condense_lines, correct_tuplets
 
 def file_content(filename) -> list[str]:
     content = []
@@ -32,7 +32,8 @@ def write_file_content(filename, content):
 def purge(filename, output_file):
     content = file_content(filename)
     content_without_layout_instructions = remove_layout_instructions(content)
-    purged_content = condense_lines(content_without_layout_instructions)
+    content_with_corrected_tuplets = correct_tuplets(content_without_layout_instructions)
+    purged_content = condense_lines(content_with_corrected_tuplets)
     if output_file:
         write_file_content(output_file, purged_content)
     else:
