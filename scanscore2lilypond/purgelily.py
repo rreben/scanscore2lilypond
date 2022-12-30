@@ -1,4 +1,4 @@
-# purge.py
+# purgelily.py
 # Copyright (c) 2022 Dr. Rupert Rebentisch
 # Licensed under the MIT license
 
