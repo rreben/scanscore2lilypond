@@ -11,9 +11,20 @@ This is where scanscore2lilypond comes in handy: It purges the resulting lilypon
 
 ```scanscore2lilypond``` has to be installed as a python library (s. below). You can start the purge with.
 
-```sh
-scanscore2lilypond somelilypondfile.ly
-```
+We use to steps to improve the generation of a lilypond file from a scanscore musicsxml file:
+1. We purge the musicsxml file with (we need the ```-x``` option here):
+   ```sh
+   scanscore2lilypong -x -o purged_musicsxmlfile.xml some_musicsxmlfile.xml
+   ```
+   We then use the ```musicxml2ly``` program of the lilypond package to create an improved version of the lilypond file.
+   ```sh
+   musicxml2ly purged_musicsxmlfile.xml
+   ```
+2. The resulting ```purged_musicsxmlfile.ly``` can be further improved with 
+    ```sh
+    scanscore2lilypond purged_musicsxmlfile.ly
+    ```
+    This time we do NOT use the ```-x``` option, as we are modifying the lilypond file directly.
 
 The result of the purge process will be printed to stdout.
 

@@ -35,7 +35,7 @@ def concat_lines(content: list[str]) -> str:
 
 def write_file_content(filename, content):
     with open(filename, 'w') as afile:
-            afile.write(content.decode('utf-8'))
+            afile.write(content)
 
 
 @click.command(help='purges input file')
@@ -46,12 +46,13 @@ def purge(filename, output_file, mode):
     if mode == 'xml':
         content = file_content(filename)
         purged_content = remove_layout_instructions_from_xml(content)
+        purged_content = purged_content.decode('utf-8')
     else:
         content = file_content_line_by_line(filename)
         content_without_layout_instructions = remove_layout_instructions(content)
         content_with_corrected_tuplets = correct_tuplets(content_without_layout_instructions)
         purged_content = condense_lines(content_with_corrected_tuplets)
-        purged_content = concat_lines(purged_content)
+        purged_content = concat_lines(content_with_corrected_tuplets)
 
     if output_file:
         print(f'writing to {output_file}')

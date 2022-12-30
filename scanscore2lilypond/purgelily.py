@@ -15,18 +15,12 @@ def remove_layout_instructions(content: list[str]) -> list[str]:
     """
     new_content = []
     for line in content:
-        new_line = re.sub(r'\\once \\override Stem\.color', '', line)
-        new_line = re.sub(r' \= \#\(rgb-color 0\.0 0\.0 0\.0\)', '', new_line)
-        new_line = re.sub(r' \= \#\(rgb-color( 0\.0)*', '', new_line)
-        new_line = re.sub(r'^\s*(0\.0[ ]*){1,4}\)', '', new_line)
-        new_line = re.sub(r'\\once \\omit TupletBracket', '', new_line)
-        new_line = re.sub(r'\\stemUp', '', new_line)
-        new_line = re.sub(r'\\stemDown', '', new_line)
+        new_line = re.sub(r'\\once \\omit TupletBracket', '', line)
         new_line = re.sub(r'\\break', '', new_line)
         new_line = re.sub(r'\\pageBreak', '', new_line)
+        new_line = re.sub(r'\\barNumberCheck \#\d+', '', new_line)
         new_line = re.sub(r'\\bar \"\|\"', '|', new_line)
         new_line = re.sub(r'\| \% \d+', '|', new_line)
-        new_line = re.sub(r'\n$', '', new_line)
         new_content.append(new_line)
         
     return new_content
