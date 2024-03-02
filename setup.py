@@ -12,11 +12,14 @@ setup(
     name='scanscore2lilypond',
     packages=find_packages(),
     description=(
-        'Purges lilypond-file that have been created from scanscore via musicxml.'),
+        'Purges lilypond-file that have been created '
+        'from scanscore via musicxml.'
+    ),
     long_description=long_description,
     long_description_content_type='text/x-rst',
     author='Dr. Rupert Rebentisch',
     author_email='rupert.rebentisch@gmail.com',
+    license='MIT',
     install_requires=[
         'Click'
     ],
