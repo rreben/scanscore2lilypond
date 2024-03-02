@@ -61,6 +61,7 @@ Now we can install the lib with:
 ```sh
 pip install -e . 
 ```
+The terminal must be completely closed (quit) once. After that, the terminal needs to be restarted and the virtual environment must be restarted with source venv/bin/activate. Only then is the Python library in the shell's path.
 
 The following command can be used to view the metadata of the library:
 ```sh
