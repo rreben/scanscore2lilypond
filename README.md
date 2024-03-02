@@ -62,6 +62,10 @@ Now we can install the lib with:
 pip install -e . 
 ```
 
+The following command can be used to view the metadata of the library:
+```sh
+pip show scanscore2lilypond
+```
 
 ## How to use ScanScore
 
