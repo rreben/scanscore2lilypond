@@ -4,6 +4,7 @@
 
 import re
 
+
 def remove_layout_instructions(content: list[str]) -> list[str]:
     """Removes layout instructions from the content.
 
@@ -22,8 +23,8 @@ def remove_layout_instructions(content: list[str]) -> list[str]:
         new_line = re.sub(r'\\bar \"\|\"', '|', new_line)
         new_line = re.sub(r'\| \% \d+', '|', new_line)
         new_content.append(new_line)
-        
     return new_content
+
 
 def correct_tuplets(content: list[str]) -> list[str]:
     """Corrects tuplets.
@@ -64,7 +65,8 @@ def condense_lines(content: list[str]) -> list[str]:
             new_content.append(condensed_line)
             condensed_line = ''
         else:
-            # in all other cases we just add the line and any input of condensed line
+            # in all other cases we just add the line
+            # and any input of condensed line
             # we might have so far
             if condensed_line:
                 condensed_line = re.sub(r'\s+', ' ', condensed_line)

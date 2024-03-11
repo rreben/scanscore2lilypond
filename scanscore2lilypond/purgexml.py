@@ -4,10 +4,11 @@
 
 import xml.etree.ElementTree as ET
 
+
 def remove_layout_instructions_from_xml(content) -> str:
-    
+
     new_content = []
-   # Parse the MusicXML file
+    # Parse the MusicXML file
     tree = ET.fromstring(content)
     note_elements = []
 
@@ -20,7 +21,7 @@ def remove_layout_instructions_from_xml(content) -> str:
 
     # Find all note elements
     note_elements = tree.findall('.//note')
-    print ('number of notes: ', len(note_elements))
+    print('number of notes: ', len(note_elements))
 
     # Remove stem and color information from each note element
     for note_element in note_elements:
