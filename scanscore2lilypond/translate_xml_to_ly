@@ -1,0 +1,20 @@
+import subprocess
+
+
+def run_musicxml2ly(input_file, output_file):
+    try:
+        # Überprüfen, ob musicxml2ly verfügbar ist
+        subprocess.check_call(['which', 'musicxml2ly'])
+    except subprocess.CalledProcessError:
+        print(
+            "musicxml2ly ist nicht verfügbar." +
+            "Bitte installieren Sie es und versuchen Sie es erneut.")
+        return
+
+    # musicxml2ly mit der Eingabe- und Ausgabedatei ausführen
+    try:
+        subprocess.check_call(['musicxml2ly', '-o', output_file, input_file])
+        print("musicxml2ly erfolgreich ausgeführt.")
+        print(f"Ausgabedatei: {output_file}")
+    except subprocess.CalledProcessError as e:
+        print(f"Es gab einen Fehler beim Ausführen von musicxml2ly: {e}")
