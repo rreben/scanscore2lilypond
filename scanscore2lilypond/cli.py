@@ -28,14 +28,22 @@ def file_content(filename) -> str:
 
 
 def file_content_line_by_line(filename) -> list[str]:
-    content = []
-    with open(filename, 'r') as afile:
-        content = afile.readlines()
-    return content
+    try:
+        with open(filename, 'r') as afile:
+            content = afile.readlines()
+        return content
+    except FileNotFoundError:
+        print(f"Error: File '{filename}' not found.")
+        exit(1)
 
 
 def concat_lines(content: list[str]) -> str:
     return ''.join(content)
+
+
+def purge_process(input_file):
+    print(f'processing {input_file}')
+    exit(2)
 
 
 def write_file_content(filename, content):
@@ -51,6 +59,16 @@ def show_banner():
 
 @click.command(help='purges input file')
 @click.argument('filename')
+@click.option(
+    '-f',
+    '--full',
+    'mode',
+    flag_value='full',
+    default=False,
+    help=(
+        'runs the full process of purging a musicsxml file' +
+        'assertand transforming it to a lylipond file which' +
+        'will furthter be cleaned.'))
 @click.option('-x',
               '--xml',
               'mode',
@@ -66,7 +84,9 @@ def show_banner():
 )
 def purge(filename, output_file, mode):
     show_banner()
-    if mode == 'xml':
+    if mode == 'full':
+        purge_process(filename)
+    elif mode == 'xml':
         content = file_content(filename)
         purged_content = remove_layout_instructions_from_xml(content)
         purged_content = purged_content.decode('utf-8')
