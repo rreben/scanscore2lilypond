@@ -10,6 +10,7 @@ An excellent tutorial is found at "https://zetcode.com/python/click".
 """
 
 import click
+import os
 from . import __version__
 from .purgelily import (
     remove_layout_instructions,
@@ -41,14 +42,37 @@ def concat_lines(content: list[str]) -> str:
     return ''.join(content)
 
 
-def purge_process(input_file):
-    print(f'processing {input_file}')
-    exit(2)
+def append_step_to_filename(filepath, step_name):
+    # Zerlegen des Pfades in Verzeichnis, Basisnamen und Erweiterung
+    directory, filename = os.path.split(filepath)
+    basename, extension = os.path.splitext(filename)
+    # "_step1" an den Basisnamen anhängen
+    new_basename = basename + step_name
+    # Neuen Dateinamen im gleichen Verzeichnis zusammensetzen
+    new_filepath = os.path.join(directory, new_basename + extension)
+    return new_filepath
 
 
 def write_file_content(filename, content):
-    with open(filename, 'w') as afile:
-        afile.write(content)
+    try:
+        with open(filename, 'x') as afile:
+            afile.write(content)
+    except FileExistsError:
+        print(f"Error: File '{filename}' already exists.")
+        exit(1)
+    except Exception as e:
+        print(f"Error: Failed to write file '{filename}'.")
+        print(f"Reason: {str(e)}")
+        exit(1)
+
+
+def purge_process(input_file):
+    content = file_content(input_file)
+    purged_content = remove_layout_instructions_from_xml(content)
+    purged_content = purged_content.decode('utf-8')
+    output_file = append_step_to_filename(input_file, '_step1')
+    write_file_content(output_file, purged_content)
+    exit(2)
 
 
 def show_banner():

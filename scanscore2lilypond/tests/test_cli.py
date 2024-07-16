@@ -44,15 +44,34 @@ def test_non_existent_file(runner: CliRunner):
     # Add more assertions here based on the expected behavior of your code
 
 
-def test_purge(runner: CliRunner, test_files_path):
+def test_append_step_to_filename():
+    filepath = '/path/to/file.xml'
+    step_name = '_step1'
+    expected_result = '/path/to/file_step1.xml'
+
+    result = cli.append_step_to_filename(filepath, step_name=step_name)
+
+    assert result == expected_result
+
+
+def test_purge(runner: CliRunner, test_files_path: str):
     test_folder = test_files_path
-    result = runner.invoke(
-        cli.purge,
-        ["-f", os.path.join(test_folder, 'Pleyel_Presto_I.xml')])
-    assert "scanscore2lilypond" in result.output
-    assert "processing" in result.output
+    input_file = os.path.join(test_folder, 'Pleyel_Presto_I.xml')
+    output_file = os.path.join(test_folder, 'Pleyel_Presto_I_step1.xml')
+    expected_output = os.path.join(
+        test_folder,
+        'Expected_Pleyel_Presto_I_step1.xml')
+
+    result = runner.invoke(cli.purge, ["-f", input_file])
+    assert os.path.exists(output_file)
+    content_output = cli.file_content(output_file)
+    content_expected = cli.file_content(expected_output)
+    assert content_output == content_expected
     assert result.exit_code == 2
     # Add more assertions here based on the expected behavior of your code
+
+    # Clean up the output file
+    os.remove(output_file)
 
 
 if __name__ == "__main__":
