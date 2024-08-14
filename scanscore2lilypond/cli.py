@@ -19,6 +19,7 @@ from .purgelily import (
 )
 from .purgexml import remove_layout_instructions_from_xml
 from pyfiglet import Figlet
+import subprocess
 
 
 def file_content(filename) -> str:
@@ -53,6 +54,20 @@ def append_step_to_filename(filepath, step_name):
     return new_filepath
 
 
+def convert_filename_xml_to_ly(filepath):
+    # Zerlegen des Pfades in Verzeichnis, Basisnamen und Erweiterung
+    directory, filename = os.path.split(filepath)
+    basename, extension = os.path.splitext(filename)
+    # Überprüfen, ob die Datei eine .xml-Erweiterung hat
+    if extension.lower() != '.xml':
+        raise ValueError("Die Eingabedatei muss eine .xml-Erweiterung haben.")
+    # Neue Erweiterung .ly an den Basisnamen anhängen
+    new_filename = basename + '.ly'
+    # Neuen Dateinamen im gleichen Verzeichnis zusammensetzen
+    new_filepath = os.path.join(directory, new_filename)
+    return new_filepath
+
+
 def write_file_content(filename, content):
     try:
         with open(filename, 'x') as afile:
@@ -66,12 +81,32 @@ def write_file_content(filename, content):
         exit(1)
 
 
+def run_musicxml2ly(input_file, output_file):
+    try:
+        # Überprüfen, ob musicxml2ly verfügbar ist
+        subprocess.check_call(['which', 'musicxml2ly'])
+    except subprocess.CalledProcessError:
+        print("musicxml2ly ist nicht verfügbar." +
+              "Bitte installieren Sie es und versuchen Sie es erneut.")
+        return
+
+    # musicxml2ly mit der Eingabe- und Ausgabedatei ausführen
+    try:
+        subprocess.check_call(['musicxml2ly', '-o', output_file, input_file])
+        print(
+            f"musicxml2ly erfolgreich ausgeführt. Ausgabedatei: {output_file}")
+    except subprocess.CalledProcessError as e:
+        print(f"Es gab einen Fehler beim Ausführen von musicxml2ly: {e}")
+
+
 def purge_process(input_file):
     content = file_content(input_file)
     purged_content = remove_layout_instructions_from_xml(content)
     purged_content = purged_content.decode('utf-8')
     output_file = append_step_to_filename(input_file, '_step1')
     write_file_content(output_file, purged_content)
+    lilypond_raw_file = convert_filename_xml_to_ly(output_file)
+    run_musicxml2ly(output_file, lilypond_raw_file)
     exit(2)
 
 
