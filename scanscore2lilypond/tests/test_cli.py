@@ -35,10 +35,10 @@ def test_files(test_files_path: str):
     if os.path.exists(output_file_step2):
         os.remove(output_file_step2)
     if os.path.exists(cli.change_step_and_extension(
-            output_file_step2, old_step='_step2', new_step='_step2', 
+            output_file_step2, old_step='_step2', new_step='_step2',
             new_extension='.ly~')):
         os.remove(cli.change_step_and_extension(
-            output_file_step2, old_step='_step2', new_step='_step2', 
+            output_file_step2, old_step='_step2', new_step='_step2',
             new_extension='.ly~'))
 
 
