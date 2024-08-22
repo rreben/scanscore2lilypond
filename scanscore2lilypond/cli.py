@@ -54,6 +54,41 @@ def append_step_to_filename(filepath, step_name):
     return new_filepath
 
 
+def change_step_and_extension(
+        filepath,
+        old_step='_step1',
+        new_step='_step2',
+        new_extension='.ly'):
+    """
+    Ändert den Dateinamen von `filepath`, indem `old_step`
+    durch `new_step` ersetzt wird und
+    die Dateierweiterung in `new_extension` geändert wird.
+
+    Args:
+        filepath (str): Der ursprüngliche Dateipfad.
+        old_step (str): Der alte Schritt-Name (z.B. '_step1').
+        new_step (str): Der neue Schritt-Name (z.B. '_step2').
+        new_extension (str): Die neue Dateierweiterung (z.B. '.ly').
+
+    Returns:
+        str: Der geänderte Dateipfad.
+    """
+    # Get directory, base filename, and extension
+    directory, filename = os.path.split(filepath)
+    base, ext = os.path.splitext(filename)
+    # Replace the old step with the new step in the base filename
+    if old_step in base:
+        base = base.replace(old_step, new_step)
+    else:
+        raise ValueError(
+            f"Der Dateiname enthält nicht den erwarteten Schritt: {old_step}")
+    # Change the file extension
+    new_filename = base + new_extension
+    # Combine directory with the new filename
+    new_filepath = os.path.join(directory, new_filename)
+    return new_filepath
+
+
 def convert_filename_xml_to_ly(filepath):
     # Zerlegen des Pfades in Verzeichnis, Basisnamen und Erweiterung
     directory, filename = os.path.split(filepath)

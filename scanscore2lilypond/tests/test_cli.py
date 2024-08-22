@@ -21,13 +21,13 @@ def test_files_path():
 def test_files(test_files_path: str):
     test_folder = test_files_path
     input_file = os.path.join(test_folder, 'Pleyel_Presto_I.xml')
-    output_file = os.path.join(test_folder, 'Pleyel_Presto_I_step1.xml')
-    expected_output = os.path.join(
+    output_file_step1 = os.path.join(test_folder, 'Pleyel_Presto_I_step1.xml')
+    expected_output_step1 = os.path.join(
         test_folder, 'Expected_Pleyel_Presto_I_step1.xml')
-    yield input_file, output_file, expected_output
+    yield input_file, output_file_step1, expected_output_step1
     # Teardown code to clean up after the test
-    if os.path.exists(output_file):
-        os.remove(output_file)
+    if os.path.exists(output_file_step1):
+        os.remove(output_file_step1)
 
 
 def test_cli(runner: CliRunner):
@@ -70,14 +70,23 @@ def test_append_step_to_filename():
     assert result == expected_result
 
 
+def test_change_step_and_extension():
+    filepath = '/path/to/file_step1.xml'
+    expected_result = '/path/to/file_step2.ly'
+
+    result = cli.change_step_and_extension(filepath)
+
+    assert (result == expected_result)
+
+
 def test_purge(runner: CliRunner, test_files: tuple[str, str, str]):
-    input_file, output_file, expected_output = test_files
+    input_file, output_file_step1, expected_output_step1 = test_files
 
     result = runner.invoke(cli.purge, ["-f", input_file])
-    assert os.path.exists(output_file)
-    content_output = cli.file_content(output_file)
-    content_expected = cli.file_content(expected_output)
-    assert content_output == content_expected
+    assert os.path.exists(output_file_step1)
+    content_output_step1 = cli.file_content(output_file_step1)
+    content_expected_step1 = cli.file_content(expected_output_step1)
+    assert content_output_step1 == content_expected_step1
     assert result.exit_code == 2
 
 
