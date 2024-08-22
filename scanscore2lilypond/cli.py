@@ -140,7 +140,7 @@ def purge_process(input_file):
     purged_content = purged_content.decode('utf-8')
     output_file = append_step_to_filename(input_file, '_step1')
     write_file_content(output_file, purged_content)
-    lilypond_raw_file = convert_filename_xml_to_ly(output_file)
+    lilypond_raw_file = change_step_and_extension(output_file)
     run_musicxml2ly(output_file, lilypond_raw_file)
     exit(2)
 
