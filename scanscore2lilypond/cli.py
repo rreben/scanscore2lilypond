@@ -142,6 +142,20 @@ def purge_process(input_file):
     write_file_content(output_file, purged_content)
     lilypond_raw_file = change_step_and_extension(output_file)
     run_musicxml2ly(output_file, lilypond_raw_file)
+
+    lilypond_raw_file_content = file_content_line_by_line(lilypond_raw_file)
+    lilypond_content_without_layout_instructions = (
+            remove_layout_instructions(lilypond_raw_file_content))
+    lilypond_content_with_corrected_tuplets = (
+            correct_tuplets(lilypond_content_without_layout_instructions))
+    output_file_step3 = change_step_and_extension(
+        lilypond_raw_file,
+        old_step='_step2',
+        new_step='_step3',
+        new_extension='.ly')
+    write_file_content(
+        output_file_step3,
+        concat_lines(lilypond_content_with_corrected_tuplets))
     exit(2)
 
 
