@@ -5,6 +5,49 @@
 import re
 
 
+def remove_global_staff_and_layout(content: list[str]) -> list[str]:
+    """Removes global staff size, paper size,
+    and layout instructions from the content.
+
+    Args:
+        content (list): The content of the file.
+
+    Returns:
+        list: The content of the file without the specified instructions.
+    """
+    new_content = []
+    skip_block = False
+    brace_count = 0
+
+    for line in content:
+        # Check for lines that should be removed or skipped
+        # This line removes the global staff size directive
+        if re.match(r'#\(set-global-staff-size', line):
+            continue
+        # These lines detect the start of a \paper or \layout block
+        # and initiate skipping of those blocks
+        elif re.match(r'\\paper', line) or re.match(r'\\layout', line):
+            skip_block = True
+            # Initialize brace count based on the current line
+            brace_count = line.count('{') - line.count('}')
+            continue
+
+        if skip_block:
+            # Update the brace count to track the depth of the block
+            brace_count += line.count('{') - line.count('}')
+            # Check if we have exited the block
+            if brace_count <= 0:
+                skip_block = False
+            continue
+
+        # Add the line to the new content
+        # if it's not in a block that should be skipped
+        if not skip_block:
+            new_content.append(line)
+
+    return new_content
+
+
 def replace_point_and_click(content: list[str]) -> list[str]:
     """Replaces \\pointAndClickOff with \\pointAndClickOn in the content.
 
