@@ -1,6 +1,6 @@
 \version "2.22.1"
 % automatically converted by musicxml2ly from /Users/rupertrebentisch/scanscore2lilypond/scanscore2lilypond/tests/test_files/Pleyel_Presto_I_step1.xml
-\pointAndClickOff
+\pointAndClickOn
 
 \header {
     encodingsoftware =  "MusicXML Library v3"

@@ -15,7 +15,8 @@ from . import __version__
 from .purgelily import (
     remove_layout_instructions,
     condense_lines,
-    correct_tuplets
+    correct_tuplets,
+    replace_point_and_click,
 )
 from .purgexml import remove_layout_instructions_from_xml
 from pyfiglet import Figlet
@@ -148,6 +149,8 @@ def purge_process(input_file):
             remove_layout_instructions(lilypond_raw_file_content))
     lilypond_content_with_corrected_tuplets = (
             correct_tuplets(lilypond_content_without_layout_instructions))
+    lilypond_content_with_PointAndClickOn = (
+            replace_point_and_click(lilypond_content_with_corrected_tuplets))
     output_file_step3 = change_step_and_extension(
         lilypond_raw_file,
         old_step='_step2',
@@ -155,7 +158,7 @@ def purge_process(input_file):
         new_extension='.ly')
     write_file_content(
         output_file_step3,
-        concat_lines(lilypond_content_with_corrected_tuplets))
+        concat_lines(lilypond_content_with_PointAndClickOn))
     exit(2)
 
 
