@@ -27,18 +27,31 @@ def test_files(test_files_path: str):
     output_file_step2 = os.path.join(test_folder, 'Pleyel_Presto_I_step2.ly')
     expected_output_step2 = os.path.join(
         test_folder, 'Expected_Pleyel_Presto_I_step2.ly')
-    yield (input_file, output_file_step1,
-           expected_output_step1, output_file_step2, expected_output_step2)
+    output_file_step3 = os.path.join(test_folder, 'Pleyel_Presto_I_step3.ly')
+    expected_output_step3 = os.path.join(
+        test_folder, 'Expected_Pleyel_Presto_I_step3.ly')
+    yield (input_file,
+           output_file_step1, expected_output_step1,
+           output_file_step2, expected_output_step2,
+           output_file_step3, expected_output_step3)
     # Teardown code to clean up after the test
     if os.path.exists(output_file_step1):
         os.remove(output_file_step1)
     if os.path.exists(output_file_step2):
         os.remove(output_file_step2)
+    if os.path.exists(output_file_step3):
+        os.remove(output_file_step3)
     if os.path.exists(cli.change_step_and_extension(
             output_file_step2, old_step='_step2', new_step='_step2',
             new_extension='.ly~')):
         os.remove(cli.change_step_and_extension(
             output_file_step2, old_step='_step2', new_step='_step2',
+            new_extension='.ly~'))
+    if os.path.exists(cli.change_step_and_extension(
+            output_file_step3, old_step='_step3', new_step='_step3',
+            new_extension='.ly~')):
+        os.remove(cli.change_step_and_extension(
+            output_file_step3, old_step='_step3', new_step='_step3',
             new_extension='.ly~'))
 
 
@@ -94,7 +107,9 @@ def test_change_step_and_extension():
 def test_purge(runner: CliRunner, test_files: tuple[str, str, str]):
     (input_file,
      output_file_step1, expected_output_step1,
-     output_file_step2, expected_output_step2) = test_files
+     output_file_step2, expected_output_step2,
+     output_file_step3, expected_output_step3
+     ) = test_files
 
     result = runner.invoke(cli.purge, ["-f", input_file])
     assert os.path.exists(output_file_step1)
@@ -105,6 +120,9 @@ def test_purge(runner: CliRunner, test_files: tuple[str, str, str]):
     content_output_step2 = cli.file_content(output_file_step2)
     content_expected_step2 = cli.file_content(expected_output_step2)
     assert content_output_step2 == content_expected_step2
+    content_output_step3 = cli.file_content(output_file_step3)
+    content_expected_step3 = cli.file_content(expected_output_step3)
+    assert content_output_step3 == content_expected_step3
     assert result.exit_code == 2
 
 
