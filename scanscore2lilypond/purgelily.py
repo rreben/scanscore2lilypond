@@ -5,6 +5,22 @@
 import re
 
 
+def replace_point_and_click(content: list[str]) -> list[str]:
+    """Replaces \\pointAndClickOff with \\pointAndClickOn in the content.
+
+    Args:
+        content (list): The content of the file.
+
+    Returns:
+        list: The content of the file with the replaced command.
+    """
+    new_content = []
+    for line in content:
+        new_line = re.sub(r'\\pointAndClickOff', r'\\pointAndClickOn', line)
+        new_content.append(new_line)
+    return new_content
+
+
 def remove_layout_instructions(content: list[str]) -> list[str]:
     """Removes layout instructions from the content.
 
