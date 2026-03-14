@@ -21,6 +21,7 @@ from .purgelily import (
 from .purgexml import remove_layout_instructions_from_xml
 from pyfiglet import Figlet
 import subprocess
+import shutil
 
 
 def file_content(filename) -> str:
@@ -118,17 +119,23 @@ def write_file_content(filename, content):
 
 
 def run_musicxml2ly(input_file, output_file):
-    try:
-        # Überprüfen, ob musicxml2ly verfügbar ist
-        subprocess.check_call(['which', 'musicxml2ly'])
-    except subprocess.CalledProcessError:
+    # Zuerst nach gepatchter Version im Paketverzeichnis suchen
+    package_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    patched_path = os.path.join(package_dir, 'musicxml2ly_patched')
+    if os.path.isfile(patched_path):
+        musicxml2ly_path = patched_path
+    else:
+        musicxml2ly_path = shutil.which('musicxml2ly')
+    if musicxml2ly_path is None:
         print("musicxml2ly ist nicht verfügbar." +
               "Bitte installieren Sie es und versuchen Sie es erneut.")
         return
 
+    print(musicxml2ly_path)
     # musicxml2ly mit der Eingabe- und Ausgabedatei ausführen
     try:
-        subprocess.check_call(['musicxml2ly', '-o', output_file, input_file])
+        subprocess.check_call(
+            [musicxml2ly_path, '-o', output_file, input_file])
         print(
             f"musicxml2ly erfolgreich ausgeführt. Ausgabedatei: {output_file}")
     except subprocess.CalledProcessError as e:
