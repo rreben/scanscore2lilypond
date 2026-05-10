@@ -11,6 +11,7 @@ An excellent tutorial is found at "https://zetcode.com/python/click".
 
 import click
 import os
+import sys
 from . import __version__
 from .purgelily import (
     remove_layout_instructions,
@@ -118,28 +119,50 @@ def write_file_content(filename, content):
         exit(1)
 
 
+def compatible_patched_lilypond_paths():
+    paths = [
+        os.path.join('/opt/local/share/lilypond/2.22.1', 'python'),
+    ]
+    return [path for path in paths if os.path.isdir(path)]
+
+
 def run_musicxml2ly(input_file, output_file):
     # Zuerst nach gepatchter Version im Paketverzeichnis suchen
     package_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     patched_path = os.path.join(package_dir, 'musicxml2ly_patched')
-    if os.path.isfile(patched_path):
+    env = None
+    patched_lilypond_paths = compatible_patched_lilypond_paths()
+    if os.path.isfile(patched_path) and patched_lilypond_paths:
         musicxml2ly_path = patched_path
+        musicxml2ly_command = [sys.executable, musicxml2ly_path]
+        env = os.environ.copy()
+        pythonpath = os.pathsep.join(patched_lilypond_paths)
+        if env.get('PYTHONPATH'):
+            pythonpath = pythonpath + os.pathsep + env['PYTHONPATH']
+        env['PYTHONPATH'] = pythonpath
     else:
         musicxml2ly_path = shutil.which('musicxml2ly')
     if musicxml2ly_path is None:
         print("musicxml2ly ist nicht verfügbar." +
               "Bitte installieren Sie es und versuchen Sie es erneut.")
-        return
+        return False
+    if 'musicxml2ly_command' not in locals():
+        musicxml2ly_command = ['musicxml2ly']
 
     print(musicxml2ly_path)
     # musicxml2ly mit der Eingabe- und Ausgabedatei ausführen
     try:
-        subprocess.check_call(
-            [musicxml2ly_path, '-o', output_file, input_file])
+        command = musicxml2ly_command + ['-o', output_file, input_file]
+        if env is None:
+            subprocess.check_call(command)
+        else:
+            subprocess.check_call(command, env=env)
         print(
             f"musicxml2ly erfolgreich ausgeführt. Ausgabedatei: {output_file}")
+        return True
     except subprocess.CalledProcessError as e:
         print(f"Es gab einen Fehler beim Ausführen von musicxml2ly: {e}")
+        return False
 
 
 def purge_process(input_file):
@@ -149,7 +172,8 @@ def purge_process(input_file):
     output_file = append_step_to_filename(input_file, '_step1')
     write_file_content(output_file, purged_content)
     lilypond_raw_file = change_step_and_extension(output_file)
-    run_musicxml2ly(output_file, lilypond_raw_file)
+    if not run_musicxml2ly(output_file, lilypond_raw_file):
+        exit(1)
 
     lilypond_raw_file_content = file_content_line_by_line(lilypond_raw_file)
     lilypond_content_without_layout_instructions = (
@@ -215,9 +239,7 @@ def purge(filename, output_file, mode):
         content_with_corrected_tuplets = (
             correct_tuplets(content_without_layout_instructions))
         purged_content = condense_lines(content_with_corrected_tuplets)
-        purged_content = concat_lines(
-            content_with_corrected_tuplets
-        )
+        purged_content = concat_lines(purged_content)
 
     if output_file:
         print(f'writing to {output_file}')

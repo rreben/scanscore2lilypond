@@ -1,8 +1,8 @@
 import pytest
 import os
+import shutil
 from click.testing import CliRunner
 from scanscore2lilypond import cli
-import subprocess
 from unittest.mock import patch
 from scanscore2lilypond.cli import run_musicxml2ly
 
@@ -111,7 +111,13 @@ def test_purge(runner: CliRunner, test_files: tuple[str, str, str]):
      output_file_step3, expected_output_step3
      ) = test_files
 
-    result = runner.invoke(cli.purge, ["-f", input_file])
+    def fake_run_musicxml2ly(input_file, output_file):
+        shutil.copyfile(expected_output_step2, output_file)
+        return True
+
+    with patch('scanscore2lilypond.cli.run_musicxml2ly',
+               side_effect=fake_run_musicxml2ly):
+        result = runner.invoke(cli.purge, ["-f", input_file])
     assert os.path.exists(output_file_step1)
     content_output_step1 = cli.file_content(output_file_step1)
     content_expected_step1 = cli.file_content(expected_output_step1)
@@ -138,17 +144,20 @@ def test_purge(runner: CliRunner, test_files: tuple[str, str, str]):
 # output_file.ly. If the function does not call subprocess.check_call with
 # the expected arguments, the test will fail.
 def test_run_musicxml2ly_available():
-    with patch('subprocess.check_call') as mock_check_call:
-        run_musicxml2ly('input_file.xml', 'output_file.ly')
+    with patch('os.path.isfile', return_value=False), \
+            patch('shutil.which', return_value='musicxml2ly'), \
+            patch('subprocess.check_call') as mock_check_call:
+        assert run_musicxml2ly('input_file.xml', 'output_file.ly') is True
         mock_check_call.assert_called_with(
             ['musicxml2ly', '-o', 'output_file.ly', 'input_file.xml'])
 
 
 def test_run_musicxml2ly_not_available():
-    with patch('subprocess.check_call') as mock_check_call:
-        mock_check_call.side_effect = subprocess.CalledProcessError(1, 'which')
-        run_musicxml2ly('input_file.xml', 'output_file.ly')
-        mock_check_call.assert_called_with(['which', 'musicxml2ly'])
+    with patch('os.path.isfile', return_value=False), \
+            patch('shutil.which', return_value=None), \
+            patch('subprocess.check_call') as mock_check_call:
+        assert run_musicxml2ly('input_file.xml', 'output_file.ly') is False
+        mock_check_call.assert_not_called()
 
 
 if __name__ == "__main__":

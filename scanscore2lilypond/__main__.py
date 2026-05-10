@@ -1,5 +1,10 @@
 # __main__.py
 from .app import ScanScore2LilyPond
 
-if __name__ == '__main__':
+
+def main():
     ScanScore2LilyPond.run()
+
+
+if __name__ == '__main__':
+    main()
