@@ -8,10 +8,12 @@ from pathlib import Path
 # README laden, falls vorhanden
 readme_path = Path(__file__).parent / "README.md"
 long_description = readme_path.read_text(encoding="utf-8") if readme_path.exists() else ""
+version_path = Path(__file__).parent / "scanscore2lilypond" / "VERSION"
+version = version_path.read_text(encoding="utf-8").strip()
 
 setup(
     name="scanscore2lilypond",
-    version="0.0.1",  # ggf. Version aus VERSION-Datei lesen
+    version=version,
     packages=find_packages(include=["scanscore2lilypond", "scanscore2lilypond.*"]),
     description=(
         "Bereinigt LilyPond-Dateien, die aus ScanScore über MusicXML erzeugt wurden."

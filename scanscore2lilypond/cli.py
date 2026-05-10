@@ -20,7 +20,7 @@ from .purgelily import (
     replace_point_and_click,
 )
 from .purgexml import remove_layout_instructions_from_xml
-from pyfiglet import Figlet
+from pyfiglet import Figlet, FontNotFound
 import subprocess
 import shutil
 
@@ -194,8 +194,11 @@ def purge_process(input_file):
 
 
 def show_banner():
-    f = Figlet(font='slant')
-    print(f.renderText('scanscore2lilypond'))
+    try:
+        f = Figlet(font='slant')
+        print(f.renderText('scanscore2lilypond'))
+    except FontNotFound:
+        print('scanscore2lilypond')
     print("Copyright (c) 2021 Rupert Rebentisch, Version: ", __version__)
 
 
